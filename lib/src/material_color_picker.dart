@@ -17,6 +17,7 @@ class MaterialColorPicker extends StatefulWidget {
   final VoidCallback? onBack;
   final double? elevation;
   final Duration animationDuration;
+  final Widget backIcon;
 
   const MaterialColorPicker({
     Key? key,
@@ -34,6 +35,7 @@ class MaterialColorPicker extends StatefulWidget {
     this.onBack,
     this.elevation,
     this.animationDuration = const Duration(milliseconds: 200),
+    this.backIcon = const Icon(Icons.arrow_back),
   }) : super(key: key);
 
   @override
@@ -157,7 +159,7 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
   List<Widget> _buildListShadesColor(ColorSwatch color) {
     return [
       IconButton(
-        icon: const Icon(Icons.arrow_back),
+        icon: widget.backIcon,
         onPressed: _onBack,
         padding: const EdgeInsets.only(right: 2.0),
       ),
