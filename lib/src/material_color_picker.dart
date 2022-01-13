@@ -1,6 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_material_color_picker/src/circle_color.dart';
 import 'package:flutter_material_color_picker/src/colors.dart';
-import 'package:flutter/material.dart';
 
 class MaterialColorPicker extends StatefulWidget {
   final Color? selectedColor;
@@ -16,6 +16,7 @@ class MaterialColorPicker extends StatefulWidget {
   final IconData iconSelected;
   final VoidCallback? onBack;
   final double? elevation;
+  final Duration animationDuration;
 
   const MaterialColorPicker({
     Key? key,
@@ -32,6 +33,7 @@ class MaterialColorPicker extends StatefulWidget {
     this.spacing = 9.0,
     this.onBack,
     this.elevation,
+    this.animationDuration = const Duration(milliseconds: 200),
   }) : super(key: key);
 
   @override
@@ -56,7 +58,7 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
   @protected
   void didUpdateWidget(covariant MaterialColorPicker oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _initSelectedValue();
+    if (widget.selectedColor != oldWidget.selectedColor) _initSelectedValue();
   }
 
   void _initSelectedValue() {
@@ -96,20 +98,18 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
   void _onMainColorSelected(ColorSwatch color) {
     var isShadeOfMain = _isShadeOfMain(color, _shadeColor);
     final shadeColor =
-        isShadeOfMain ? _shadeColor : (color[500] ?? color[400]!);
+    isShadeOfMain ? _shadeColor : (color[500] ?? color[400]!);
 
     setState(() {
       _mainColor = color;
-      _shadeColor = shadeColor;
+      //_shadeColor = shadeColor;
       _isMainSelection = false;
     });
     widget.onMainColorChange?.call(color);
     if (widget.onlyShadeSelection && !_isMainSelection) {
       return;
     }
-    if (widget.allowShades) {
-      widget.onColorChange?.call(shadeColor);
-    }
+    //if (widget.allowShades) {widget.onColorChange?.call(shadeColor);}
   }
 
   void _onShadeColorSelected(Color color) {
@@ -118,7 +118,10 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
   }
 
   void _onBack() {
-    setState(() => _isMainSelection = true);
+    setState(() {
+      _mainColor = _findMainColor(_shadeColor) ?? _mainColor;
+      _isMainSelection = true;
+    });
     widget.onBack?.call();
   }
 
@@ -166,6 +169,7 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
           isSelected: _shadeColor == color,
           iconSelected: widget.iconSelected,
           elevation: widget.elevation,
+          animationDuration: widget.animationDuration,
         ),
     ];
   }

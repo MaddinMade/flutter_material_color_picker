@@ -11,6 +11,7 @@ class CircleColor extends StatelessWidget {
   final double circleSize;
   final double? elevation;
   final IconData? iconSelected;
+  final Duration animationDuration;
 
   const CircleColor({
     Key? key,
@@ -20,6 +21,7 @@ class CircleColor extends StatelessWidget {
     this.isSelected = false,
     this.elevation = _kColorElevation,
     this.iconSelected,
+    this.animationDuration = const Duration(milliseconds: 200),
   })  : assert(circleSize >= 0, "You must provide a positive size"),
         assert(!isSelected || (isSelected && iconSelected != null)),
         super(key: key);
@@ -27,17 +29,20 @@ class CircleColor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final brightness = ThemeData.estimateBrightnessForColor(color);
-    final icon = brightness == Brightness.light ? Colors.black : Colors.white;
+    final iconColor =
+        brightness == Brightness.light ? Colors.black : Colors.white;
 
     return GestureDetector(
       onTap: onColorChoose != null ? () => onColorChoose!(color) : null,
       child: Material(
         elevation: elevation ?? _kColorElevation,
         shape: const CircleBorder(),
-        child: CircleAvatar(
-          radius: circleSize / 2,
-          backgroundColor: color,
-          child: isSelected ? Icon(iconSelected, color: icon) : null,
+        child: AnimatedContainer(
+          width: circleSize,
+          height: circleSize,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          duration: animationDuration,
+          child: isSelected ? Icon(iconSelected, color: iconColor) : null,
         ),
       ),
     );
