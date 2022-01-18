@@ -47,8 +47,8 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
 
   List<ColorSwatch> _colors = materialColors;
 
-  late ColorSwatch _mainColor;
-  late Color _shadeColor;
+  late ColorSwatch? _mainColor;
+  late Color? _shadeColor;
   bool _isMainSelection = true;
 
   @override
@@ -69,11 +69,6 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
     Color shadeColor = widget.selectedColor ?? _defaultValue;
     ColorSwatch? mainColor = _findMainColor(shadeColor);
 
-    // If mainColor not found from shade, so mean that shade is wrong
-    if (mainColor == null) {
-      mainColor = _colors[0];
-      shadeColor = mainColor[500] ?? mainColor[400]!;
-    }
     setState(() {
       _mainColor = mainColor!;
       _shadeColor = shadeColor;
@@ -81,7 +76,8 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
     });
   }
 
-  ColorSwatch? _findMainColor(Color shadeColor) {
+  ColorSwatch? _findMainColor(Color? shadeColor) {
+    if (shadeColor == null) return null;
     for (final ColorSwatch mainColor in _colors)
       if (_isShadeOfMain(mainColor, shadeColor)) return mainColor;
 
@@ -98,10 +94,6 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
   }
 
   void _onMainColorSelected(ColorSwatch color) {
-    var isShadeOfMain = _isShadeOfMain(color, _shadeColor);
-    final shadeColor =
-    isShadeOfMain ? _shadeColor : (color[500] ?? color[400]!);
-
     setState(() {
       _mainColor = color;
       //_shadeColor = shadeColor;
@@ -121,7 +113,7 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
 
   void _onBack() {
     setState(() {
-      _mainColor = _findMainColor(_shadeColor) ?? _mainColor;
+      _mainColor = _findMainColor(_shadeColor);
       _isMainSelection = true;
     });
     widget.onBack?.call();
@@ -180,7 +172,7 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
   Widget build(BuildContext context) {
     final listChildren = _isMainSelection || !widget.allowShades
         ? _buildListMainColor(_colors)
-        : _buildListShadesColor(_mainColor);
+        : _buildListShadesColor(_mainColor!);
 
     // Size of dialog
     final double width = MediaQuery.of(context).size.width * 0.8;
