@@ -70,7 +70,7 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
     ColorSwatch? mainColor = _findMainColor(shadeColor);
 
     setState(() {
-      _mainColor = mainColor!;
+      _mainColor = mainColor;
       _shadeColor = shadeColor;
       _isMainSelection = true;
     });
